@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use rocket::http::Status;
 use rocket_dyn_templates::{context, Template};
 
@@ -10,7 +12,7 @@ extern crate rocket;
 async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .attach(Template::fairing())
-        .mount("/", routes![get_index])
+        .mount("/", routes![get_index, get_tags])
         .launch()
         .await?;
     Ok(())
@@ -18,11 +20,22 @@ async fn main() -> Result<(), rocket::Error> {
 
 #[get("/")]
 async fn get_index() -> Result<Template, Status> {
-    let list_items = data::get_namespaces().map_err(|_| Status::InternalServerError)?;
+    let directory = data::get_namespaces(None).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
         "index",
         context! {
-            list_items,
+            directory,
+        },
+    ))
+}
+
+#[get("/tags/<path..>")]
+async fn get_tags(path: PathBuf) -> Result<Template, Status> {
+    let directory = data::get_namespaces(Some(path)).map_err(|_| Status::InternalServerError)?;
+    Ok(Template::render(
+        "list",
+        context! {
+            directory,
         },
     ))
 }
