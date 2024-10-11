@@ -1,6 +1,8 @@
 use rocket::http::Status;
 use rocket_dyn_templates::{context, Template};
 
+mod data;
+
 #[macro_use]
 extern crate rocket;
 
@@ -8,7 +10,7 @@ extern crate rocket;
 async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .attach(Template::fairing())
-        .mount("/", routes![get_index,])
+        .mount("/", routes![get_index])
         .launch()
         .await?;
     Ok(())
@@ -16,7 +18,7 @@ async fn main() -> Result<(), rocket::Error> {
 
 #[get("/")]
 async fn get_index() -> Result<Template, Status> {
-    let list_items = vec!["Item 1", "Item 2", "Item 3"];
+    let list_items = data::get_namespaces().map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
         "index",
         context! {
