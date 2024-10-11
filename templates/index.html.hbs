@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+    <title>cubby.no</title>
+    <style>
+        * {
+            --background: #1c1e27;
+            --text: #fff;
+        }
+        html {
+            background-color: var(--background);
+            color: var(--text);
+            font-family: 'Berkeley Mono', 'JetBrains Mono';
+        }
+    </style>
+</head>
+
+<body>
+    {{> list items=list_items}}
+    <script src="https://unpkg.com/htmx.org@2.0.3/dist/htmx.min.js"></script>
+</body>
+</html>
