@@ -1,5 +1,6 @@
 use serde::Serialize;
 use std::{
+    env,
     error::Error,
     path::{Path, PathBuf},
 };
@@ -12,12 +13,14 @@ pub struct Directory {
 }
 
 pub fn get_namespaces(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
+    let container_dir = env::var("CONTAINER_DIR")?;
+
     let mut directories = Vec::new();
     let mut manifests = Vec::new();
 
     let dir_path = match &path {
-        Some(path) => Path::new("../container-cubby/data/containers/").join(path),
-        None => Path::new("../container-cubby/data/containers/").to_path_buf(),
+        Some(path) => Path::new(container_dir.as_str()).join(path),
+        None => Path::new(container_dir.as_str()).to_path_buf(),
     };
 
     let entries = std::fs::read_dir(dir_path)?;

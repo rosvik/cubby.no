@@ -1,7 +1,6 @@
-use std::path::PathBuf;
-
 use rocket::http::Status;
 use rocket_dyn_templates::{context, Template};
+use std::path::PathBuf;
 
 mod data;
 
@@ -10,6 +9,7 @@ extern crate rocket;
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
+    dotenv::dotenv().ok();
     let _rocket = rocket::build()
         .attach(Template::fairing())
         .mount("/", routes![get_index, get_tags])
