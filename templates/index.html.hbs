@@ -5,7 +5,14 @@
 </head>
 
 <body>
-    {{> directory directory=directory}}
+    {{#if path}}
+        <ul>
+            {{> directory directory=directory}}
+        </ul>
+    {{else}}
+        {{> directory directory=directory}}
+    {{/if}}
+
     <script src="/static/htmx@2.0.3.min.js"></script>
 </body>
 </html>

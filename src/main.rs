@@ -20,12 +20,14 @@ async fn main() -> Result<(), rocket::Error> {
     Ok(())
 }
 
-#[get("/")]
-async fn get_index() -> Result<Template, Status> {
-    let directory = data::get_directory(None).map_err(|_| Status::InternalServerError)?;
+#[get("/?<path>")]
+async fn get_index(path: Option<&str>) -> Result<Template, Status> {
+    let path_buf = path.map(PathBuf::from);
+    let directory = data::get_directory(path_buf).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
         "index",
         context! {
+            path,
             directory,
         },
     ))
