@@ -1,9 +1,41 @@
 * {
   --background: #1c1e27;
   --text: #fff;
+  --secondary-text: rgb(145, 145, 145);
+  --accent: #fcee54;
+  --secondary-accent: #85eea7;
 }
 html {
   background-color: var(--background);
   color: var(--text);
   font-family: 'Berkeley Mono', 'JetBrains Mono';
+}
+body {
+  width: 60ch;
+  margin: auto;
+}
+li {
+  list-style-type: "├── ";
+}
+li:last-of-type {
+  list-style-type: "└── ";
+}
+li.expanded {
+  list-style-type: "└── ";
+}
+li::marker {
+  color: var(--secondary-text);
+}
+.overflow-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.manifest-content {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 10px;
+  overflow: scroll;
+}
+.secondary-text {
+  color: var(--secondary-text);
 }

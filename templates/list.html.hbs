@@ -1,6 +1,6 @@
 {{#if directory.path}}
-    <li class="expanded-item">
-        {{directory.path}}
+    <li class="expanded">
+        <div class="overflow-truncate">{{directory.path}}</div>
     </li>
 {{/if}}
 <ul>
@@ -11,10 +11,10 @@
             hx-swap="outerHTML"
             hx-get="/tags/{{this}}"
         >
-            {{this}}
+            <div class="overflow-truncate">{{this}}</div>
         </li>
         {{else}}
-        <li class="no-result-item">
+        <li class="no-result-item secondary-text">
             No names found
         </li>
     {{/each}}
@@ -22,7 +22,7 @@
     {{#each directory.manifests}}
         {{> manifest manifest=this}}
         {{else}}
-        <li class="no-result-item">
+        <li class="no-result-item secondary-text">
             No tags found
         </li>
     {{/each}}

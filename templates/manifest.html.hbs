@@ -1,6 +1,6 @@
 {{#if manifest.content}}
-    <li class="manifest-item">
-        {{manifest.name}}
+    <li class="manifest-item expanded">
+        <div class="overflow-truncate">{{manifest.name}}</div>
         <pre class="manifest-content">{{manifest.content}}</pre>
     </li>
 {{else}}
@@ -10,6 +10,6 @@
         hx-swap="outerHTML"
         hx-get="/manifest/{{manifest.path}}"
     >
-        {{manifest.name}}
+        <div class="overflow-truncate">{{manifest.name}}</div>
     </li>
 {{/if}}
