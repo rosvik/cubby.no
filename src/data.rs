@@ -12,7 +12,7 @@ pub struct Directory {
     manifests: Vec<Manifest>,
 }
 
-pub fn get_namespaces(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
+pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
 
     let mut directories = Vec::new();

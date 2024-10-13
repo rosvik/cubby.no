@@ -13,7 +13,7 @@ async fn main() -> Result<(), rocket::Error> {
     dotenv::dotenv().ok();
     let _rocket = rocket::build()
         .attach(Template::fairing())
-        .mount("/", routes![get_index, get_tags, get_manifest])
+        .mount("/", routes![get_index, get_directory, get_manifest])
         .mount("/static", FileServer::from("static"))
         .launch()
         .await?;
@@ -22,7 +22,7 @@ async fn main() -> Result<(), rocket::Error> {
 
 #[get("/")]
 async fn get_index() -> Result<Template, Status> {
-    let directory = data::get_namespaces(None).map_err(|_| Status::InternalServerError)?;
+    let directory = data::get_directory(None).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
         "index",
         context! {
@@ -31,11 +31,11 @@ async fn get_index() -> Result<Template, Status> {
     ))
 }
 
-#[get("/tags/<path..>")]
-async fn get_tags(path: PathBuf) -> Result<Template, Status> {
-    let directory = data::get_namespaces(Some(path)).map_err(|_| Status::InternalServerError)?;
+#[get("/directory/<path..>")]
+async fn get_directory(path: PathBuf) -> Result<Template, Status> {
+    let directory = data::get_directory(Some(path)).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
-        "list",
+        "directory",
         context! {
             directory,
         },
