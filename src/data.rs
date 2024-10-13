@@ -9,7 +9,7 @@ use std::{
 pub struct Directory {
     path: Option<String>,
     directories: Vec<String>,
-    manifests: Vec<String>,
+    manifests: Vec<Manifest>,
 }
 
 pub fn get_namespaces(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
@@ -44,14 +44,22 @@ pub fn get_namespaces(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>
     Ok(Directory {
         path: path.map(|p| p.to_string_lossy().to_string()),
         directories,
-        manifests,
+        manifests: manifests
+            .iter()
+            .map(|path| Manifest {
+                name: path.split('/').last().unwrap().to_string(),
+                path: path.to_string(),
+                content: None,
+            })
+            .collect(),
     })
 }
 
 #[derive(Serialize)]
 pub struct Manifest {
     pub path: String,
-    pub content: String,
+    pub name: String,
+    pub content: Option<String>,
 }
 pub fn get_manifest(path: PathBuf) -> Result<Manifest, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
@@ -59,6 +67,7 @@ pub fn get_manifest(path: PathBuf) -> Result<Manifest, Box<dyn Error>> {
     let manifest = std::fs::read_to_string(manifest_path)?;
     Ok(Manifest {
         path: path.as_path().to_string_lossy().to_string(),
-        content: manifest,
+        name: path.file_name().unwrap().to_string_lossy().to_string(),
+        content: Some(manifest),
     })
 }

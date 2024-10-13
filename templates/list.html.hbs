@@ -20,14 +20,7 @@
     {{/each}}
 
     {{#each directory.manifests}}
-        <li
-            class="manifest-item"
-            hx-trigger="click"
-            hx-swap="outerHTML"
-            hx-get="/manifest/{{this}}"
-        >
-            {{this}}
-        </li>
+        {{> manifest manifest=this}}
         {{else}}
         <li class="no-result-item">
             No tags found
