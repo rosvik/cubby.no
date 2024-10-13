@@ -1,3 +1,4 @@
+use rocket::fs::FileServer;
 use rocket::http::Status;
 use rocket_dyn_templates::{context, Template};
 use std::path::PathBuf;
@@ -13,6 +14,7 @@ async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
         .attach(Template::fairing())
         .mount("/", routes![get_index, get_tags])
+        .mount("/static", FileServer::from("static"))
         .launch()
         .await?;
     Ok(())
