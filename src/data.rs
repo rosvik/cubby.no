@@ -5,7 +5,8 @@ use std::{env, error::Error, path::PathBuf};
 #[derive(Serialize)]
 pub struct Directory {
     path: Option<String>,
-    directories: Vec<String>,
+    name: Option<String>,
+    directories: Vec<Directory>,
     manifests: Vec<Manifest>,
 }
 
@@ -30,7 +31,12 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
                     None => name.clone(),
                 };
                 if metadata.is_dir() {
-                    directories.push(file_path);
+                    directories.push(Directory {
+                        path: Some(file_path),
+                        name: Some(name),
+                        directories: Vec::new(),
+                        manifests: Vec::new(),
+                    });
                 } else if metadata.is_file() && name.ends_with(".json") {
                     manifests.push(file_path);
                 }
@@ -39,7 +45,8 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
     });
 
     Ok(Directory {
-        path: path.map(|p| p.to_string_lossy().to_string()),
+        path: path.as_ref().map(|p| p.to_string_lossy().to_string()),
+        name: path.as_ref().map(|p| utils::gt_file_name(p)),
         directories,
         manifests: manifests
             .iter()

@@ -1,6 +1,6 @@
-{{#if directory.path}}
+{{#if directory.name}}
     <li class="expanded">
-        <div class="overflow-truncate">{{directory.path}}</div>
+        <div class="overflow-truncate">{{directory.name}}</div>
     </li>
 {{/if}}
 <ul>
@@ -17,9 +17,9 @@
             class="directory-item"
             hx-trigger="click"
             hx-swap="outerHTML"
-            hx-get="/directory/{{this}}"
+            hx-get="/directory/{{this.path}}"
         >
-            <div class="overflow-truncate">{{this}}</div>
+            <div class="overflow-truncate">{{this.name}}</div>
         </li>
     {{/each}}
 
