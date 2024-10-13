@@ -4,6 +4,7 @@ use rocket_dyn_templates::{context, Template};
 use std::path::PathBuf;
 
 mod data;
+mod utils;
 
 #[macro_use]
 extern crate rocket;

@@ -1,9 +1,6 @@
+use crate::utils;
 use serde::Serialize;
-use std::{
-    env,
-    error::Error,
-    path::{Path, PathBuf},
-};
+use std::{env, error::Error, path::PathBuf};
 
 #[derive(Serialize)]
 pub struct Directory {
@@ -19,14 +16,14 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
     let mut manifests = Vec::new();
 
     let dir_path = match &path {
-        Some(path) => Path::new(container_dir.as_str()).join(path),
-        None => Path::new(container_dir.as_str()).to_path_buf(),
+        Some(path) => PathBuf::from(container_dir).join(path),
+        None => PathBuf::from(container_dir),
     };
 
     let entries = std::fs::read_dir(dir_path)?;
     entries.for_each(|entry| {
         if let Ok(entry) = entry {
-            let name = entry.file_name().to_string_lossy().to_string();
+            let name = utils::gt_dir_entry(&entry);
             if let Ok(metadata) = entry.metadata() {
                 let file_path = match &path {
                     Some(path) => format!("{}/{}", path.to_string_lossy(), name),
@@ -47,7 +44,7 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
         manifests: manifests
             .iter()
             .map(|path| Manifest {
-                name: path.split('/').last().unwrap().to_string(),
+                name: path.split('/').last().unwrap_or("").to_string(),
                 path: path.to_string(),
                 content: None,
             })
@@ -63,11 +60,11 @@ pub struct Manifest {
 }
 pub fn get_manifest(path: PathBuf) -> Result<Manifest, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
-    let manifest_path = Path::new(container_dir.as_str()).join(&path);
-    let manifest = std::fs::read_to_string(manifest_path)?;
+    let manifest_path = PathBuf::from(container_dir).join(&path);
+    let manifest_content = std::fs::read_to_string(manifest_path)?;
     Ok(Manifest {
-        path: path.as_path().to_string_lossy().to_string(),
-        name: path.file_name().unwrap().to_string_lossy().to_string(),
-        content: Some(manifest),
+        path: utils::gt_path(&path),
+        name: utils::gt_file_name(&path),
+        content: Some(manifest_content),
     })
 }
