@@ -47,3 +47,18 @@ pub fn get_namespaces(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>
         manifests,
     })
 }
+
+#[derive(Serialize)]
+pub struct Manifest {
+    pub path: String,
+    pub content: String,
+}
+pub fn get_manifest(path: PathBuf) -> Result<Manifest, Box<dyn Error>> {
+    let container_dir = env::var("CONTAINER_DIR")?;
+    let manifest_path = Path::new(container_dir.as_str()).join(&path);
+    let manifest = std::fs::read_to_string(manifest_path)?;
+    Ok(Manifest {
+        path: path.as_path().to_string_lossy().to_string(),
+        content: manifest,
+    })
+}

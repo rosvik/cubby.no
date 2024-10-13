@@ -13,7 +13,7 @@ async fn main() -> Result<(), rocket::Error> {
     dotenv::dotenv().ok();
     let _rocket = rocket::build()
         .attach(Template::fairing())
-        .mount("/", routes![get_index, get_tags])
+        .mount("/", routes![get_index, get_tags, get_manifest])
         .mount("/static", FileServer::from("static"))
         .launch()
         .await?;
@@ -38,6 +38,17 @@ async fn get_tags(path: PathBuf) -> Result<Template, Status> {
         "list",
         context! {
             directory,
+        },
+    ))
+}
+
+#[get("/manifest/<path..>")]
+async fn get_manifest(path: PathBuf) -> Result<Template, Status> {
+    let manifest = data::get_manifest(path).map_err(|_| Status::InternalServerError)?;
+    Ok(Template::render(
+        "manifest",
+        context! {
+            manifest,
         },
     ))
 }
