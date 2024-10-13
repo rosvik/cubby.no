@@ -4,6 +4,14 @@
     </li>
 {{/if}}
 <ul>
+    {{#unless directory.directories}}
+        {{#unless directory.manifests}}
+            <li class="no-result-item secondary-text">
+                Empty directory
+            </li>
+        {{/unless}}
+    {{/unless}}
+
     {{#each directory.directories}}
         <li
             class="directory-item"
@@ -13,17 +21,9 @@
         >
             <div class="overflow-truncate">{{this}}</div>
         </li>
-        {{else}}
-        <li class="no-result-item secondary-text">
-            No names found
-        </li>
     {{/each}}
 
     {{#each directory.manifests}}
         {{> manifest manifest=this}}
-        {{else}}
-        <li class="no-result-item secondary-text">
-            No tags found
-        </li>
     {{/each}}
 </ul>
