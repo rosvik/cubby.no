@@ -9,6 +9,12 @@ pub struct Directory {
     directories: Vec<Directory>,
     manifests: Vec<Manifest>,
 }
+#[derive(Serialize)]
+pub struct Manifest {
+    pub path: String,
+    pub name: String,
+    pub content: Option<String>,
+}
 
 pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
@@ -38,7 +44,11 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
                         manifests: Vec::new(),
                     });
                 } else if metadata.is_file() && name.ends_with(".json") {
-                    manifests.push(file_path);
+                    manifests.push(Manifest {
+                        path: file_path,
+                        name,
+                        content: None,
+                    })
                 }
             }
         }
@@ -48,23 +58,10 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
         path: path.as_ref().map(|p| p.to_string_lossy().to_string()),
         name: path.as_ref().map(|p| utils::gt_file_name(p)),
         directories,
-        manifests: manifests
-            .iter()
-            .map(|path| Manifest {
-                name: path.split('/').last().unwrap_or("").to_string(),
-                path: path.to_string(),
-                content: None,
-            })
-            .collect(),
+        manifests,
     })
 }
 
-#[derive(Serialize)]
-pub struct Manifest {
-    pub path: String,
-    pub name: String,
-    pub content: Option<String>,
-}
 pub fn get_manifest(path: PathBuf) -> Result<Manifest, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
     let manifest_path = PathBuf::from(container_dir).join(&path);
