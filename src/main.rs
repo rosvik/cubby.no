@@ -34,7 +34,7 @@ async fn get_index(path: Option<&str>) -> Result<Template, Status> {
     ))
 }
 
-#[get("/directory/<path..>")]
+#[get("/htmx/directory/<path..>")]
 async fn get_directory(path: PathBuf) -> Result<Template, Status> {
     let directory = data::get_directory(Some(path)).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
@@ -45,7 +45,7 @@ async fn get_directory(path: PathBuf) -> Result<Template, Status> {
     ))
 }
 
-#[get("/manifest/<path..>")]
+#[get("/htmx/manifest/<path..>")]
 async fn get_manifest(path: PathBuf) -> Result<Template, Status> {
     let manifest = data::get_manifest(path).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
