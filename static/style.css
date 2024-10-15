@@ -12,8 +12,9 @@ html {
   font-family: 'Berkeley Mono', 'JetBrains Mono';
 }
 body {
-  width: 60ch;
+  max-width: 80ch;
   margin: auto;
+  padding: 1ch;
 }
 li {
   list-style-type: "├── ";
