@@ -26,6 +26,14 @@ li.expanded {
 li::marker {
   color: var(--secondary-text);
 }
+li[hx-trigger="click"] {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--secondary-text);
+}
+li[hx-trigger="click"]:hover {
+  color: var(--accent);
+}
 .overflow-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
