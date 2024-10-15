@@ -1,4 +1,4 @@
-use crate::utils;
+use crate::{manifest::Manifest, utils};
 use serde::Serialize;
 use std::{env, error::Error, path::PathBuf};
 
@@ -7,10 +7,10 @@ pub struct Directory {
     path: Option<String>,
     name: Option<String>,
     directories: Vec<Directory>,
-    manifests: Vec<Manifest>,
+    manifests: Vec<ManifestMetadata>,
 }
 #[derive(Serialize)]
-pub struct Manifest {
+pub struct ManifestMetadata {
     pub path: String,
     pub name: String,
     pub content: Option<String>,
@@ -44,7 +44,7 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
                         manifests: Vec::new(),
                     });
                 } else if metadata.is_file() && name.ends_with(".json") {
-                    manifests.push(Manifest {
+                    manifests.push(ManifestMetadata {
                         path: file_path,
                         name,
                         content: None,
@@ -62,13 +62,16 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
     })
 }
 
-pub fn get_manifest(path: PathBuf) -> Result<Manifest, Box<dyn Error>> {
+pub fn get_manifest(path: PathBuf) -> Result<ManifestMetadata, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
     let manifest_path = PathBuf::from(container_dir).join(&path);
-    let manifest_content = std::fs::read_to_string(manifest_path)?;
-    Ok(Manifest {
+    let manifest = std::fs::read_to_string(manifest_path)?;
+    let manifest = serde_json::from_str::<Manifest>(&manifest)?;
+    let manifest = serde_json::to_string_pretty(&manifest)?;
+
+    Ok(ManifestMetadata {
         path: utils::gt_path(&path),
         name: utils::gt_file_name(&path),
-        content: Some(manifest_content),
+        content: Some(manifest),
     })
 }
