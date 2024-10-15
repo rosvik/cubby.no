@@ -4,6 +4,7 @@
   --secondary-text: rgb(145, 145, 145);
   --accent: #fcee54;
   --secondary-accent: #85eea7;
+  --tertiary-accent: rgb(111, 184, 247);
 }
 html {
   background-color: var(--background);
@@ -34,6 +35,23 @@ li[hx-trigger="click"] {
 li[hx-trigger="click"]:hover {
   color: var(--accent);
 }
+pre {
+  color: var(--secondary-text);
+  .key {
+    color: var(--text);
+  }
+  .string {
+    color: var(--tertiary-accent);
+  }
+  .number {
+    color: var(--secondary-accent);
+  }
+  .boolean,
+  .null {
+    color: var(--accent);
+  }
+}
+
 .overflow-truncate {
   overflow: hidden;
   text-overflow: ellipsis;

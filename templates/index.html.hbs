@@ -14,5 +14,14 @@
     {{/if}}
 
     <script src="/static/htmx@2.0.3.min.js"></script>
+    <script src="/static/syntax-hightlight.js"></script>
+    <script>
+        document.body.addEventListener('htmx:afterSwap', (event) => {
+            const codeBlocks = event.detail.elt.getElementsByTagName('pre');
+            for (let i = 0; i < codeBlocks.length; i++) {
+                codeBlocks[i].innerHTML = syntaxHighlight(codeBlocks[i].innerText);
+            }
+        });
+    </script>
 </body>
 </html>
