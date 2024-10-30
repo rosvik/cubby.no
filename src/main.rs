@@ -1,7 +1,7 @@
 use rocket::fs::FileServer;
 use rocket::http::Status;
 use rocket_dyn_templates::{context, Template};
-use std::path::PathBuf;
+use std::{env, path::PathBuf};
 
 mod data;
 mod manifest;
@@ -13,7 +13,9 @@ extern crate rocket;
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
     dotenv::dotenv().ok();
+    let port = env::var("PORT").unwrap_or_default().parse::<u16>();
     let _rocket = rocket::build()
+        .configure(rocket::Config::figment().merge(("port", port.unwrap_or(8601))))
         .attach(Template::fairing())
         .mount("/", routes![get_index, get_directory, get_manifest])
         .mount("/static", FileServer::from("static"))
