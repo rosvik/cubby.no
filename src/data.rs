@@ -29,23 +29,23 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
     let entries = std::fs::read_dir(dir_path)?;
     entries.for_each(|entry| {
         if let Ok(entry) = entry {
-            let name = utils::gt_dir_entry(&entry);
+            let file_name = utils::gt_dir_entry(&entry);
             if let Ok(metadata) = entry.metadata() {
                 let file_path = match &path {
-                    Some(path) => format!("{}/{}", path.to_string_lossy(), name),
-                    None => name.clone(),
+                    Some(path) => format!("{}/{}", path.to_string_lossy(), file_name),
+                    None => file_name.clone(),
                 };
                 if metadata.is_dir() {
                     directories.push(Directory {
                         path: Some(file_path),
-                        name: Some(name),
+                        name: Some(file_name),
                         directories: Vec::new(),
                         manifests: Vec::new(),
                     });
-                } else if (metadata.is_file() || metadata.is_symlink()) && name.ends_with(".json") {
+                } else if utils::is_tag(metadata, &file_name) {
                     manifests.push(ManifestMetadata {
                         path: file_path,
-                        name,
+                        name: file_name.trim_end_matches(".json").into(),
                         content: None,
                     })
                 }
@@ -75,7 +75,9 @@ pub fn get_manifest(path: PathBuf) -> Result<ManifestMetadata, Box<dyn Error>> {
 
     Ok(ManifestMetadata {
         path: utils::gt_path(&manifest_path),
-        name: utils::gt_file_name(&manifest_path),
+        name: utils::gt_file_name(&manifest_path)
+            .trim_end_matches(".json")
+            .into(),
         content: Some(manifest_string),
     })
 }

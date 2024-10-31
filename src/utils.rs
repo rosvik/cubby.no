@@ -18,6 +18,19 @@ pub fn gt_dir_entry(entry: &fs::DirEntry) -> String {
     entry.file_name().to_string_lossy().to_string()
 }
 
+pub fn is_tag(metadata: fs::Metadata, file_name: &str) -> bool {
+    if !(metadata.is_file() || metadata.is_symlink()) {
+        return false;
+    }
+    if !file_name.ends_with(".json") {
+        return false;
+    }
+    if file_name.starts_with("sha256@") {
+        return false;
+    }
+    true
+}
+
 fn contains_parent_directory(path: &Path) -> bool {
     path.components().any(|comp| comp == Component::ParentDir)
 }
