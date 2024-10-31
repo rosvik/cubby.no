@@ -251,6 +251,7 @@ name = "cubby-no"
 version = "0.1.0"
 dependencies = [
  "dotenv",
+ "path-clean",
  "rocket",
  "rocket_dyn_templates",
  "serde",
@@ -1035,6 +1036,12 @@ dependencies = [
  "smallvec",
  "windows-targets 0.52.6",
 ]
+
+[[package]]
+name = "path-clean"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17359afc20d7ab31fdb42bb844c8b3bb1dabd7dcf7e68428492da7f16966fcef"
 
 [[package]]
 name = "pear"

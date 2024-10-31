@@ -18,15 +18,14 @@ pub struct ManifestMetadata {
 
 pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
+    let container_dir = PathBuf::from(container_dir);
+    let dir_path = match utils::safely_join(container_dir, path.clone().unwrap_or_default()) {
+        Some(path) => path,
+        None => return Err("Invalid path".into()),
+    };
 
     let mut directories = Vec::new();
     let mut manifests = Vec::new();
-
-    let dir_path = match &path {
-        Some(path) => PathBuf::from(container_dir).join(path),
-        None => PathBuf::from(container_dir),
-    };
-
     let entries = std::fs::read_dir(dir_path)?;
     entries.for_each(|entry| {
         if let Ok(entry) = entry {
@@ -64,14 +63,19 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
 
 pub fn get_manifest(path: PathBuf) -> Result<ManifestMetadata, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
-    let manifest_path = PathBuf::from(container_dir).join(&path);
-    let manifest = std::fs::read_to_string(manifest_path)?;
+    let container_dir = PathBuf::from(container_dir);
+    let manifest_path = match utils::safely_join(container_dir, path) {
+        Some(path) => path,
+        None => return Err("Invalid path".into()),
+    };
+
+    let manifest = std::fs::read_to_string(&manifest_path)?;
     let manifest = serde_json::from_str::<Manifest>(&manifest)?;
-    let manifest = serde_json::to_string_pretty(&manifest)?;
+    let manifest_string = serde_json::to_string_pretty(&manifest)?;
 
     Ok(ManifestMetadata {
-        path: utils::gt_path(&path),
-        name: utils::gt_file_name(&path),
-        content: Some(manifest),
+        path: utils::gt_path(&manifest_path),
+        name: utils::gt_file_name(&manifest_path),
+        content: Some(manifest_string),
     })
 }
