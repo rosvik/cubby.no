@@ -43,7 +43,7 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
                         directories: Vec::new(),
                         manifests: Vec::new(),
                     });
-                } else if metadata.is_file() && name.ends_with(".json") {
+                } else if (metadata.is_file() || metadata.is_symlink()) && name.ends_with(".json") {
                     manifests.push(ManifestMetadata {
                         path: file_path,
                         name,
