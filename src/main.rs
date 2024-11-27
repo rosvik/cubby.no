@@ -4,7 +4,6 @@ use rocket_dyn_templates::{context, Template};
 use std::{env, path::PathBuf};
 
 mod data;
-mod manifest;
 mod utils;
 
 #[macro_use]

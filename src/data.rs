@@ -1,4 +1,4 @@
-use crate::{manifest::Manifest, utils};
+use crate::utils;
 use serde::Serialize;
 use std::{env, error::Error, path::PathBuf};
 
@@ -70,7 +70,7 @@ pub fn get_manifest(path: PathBuf) -> Result<ManifestMetadata, Box<dyn Error>> {
     };
 
     let manifest = std::fs::read_to_string(&manifest_path)?;
-    let manifest = serde_json::from_str::<Manifest>(&manifest)?;
+    let manifest: serde_json::Value = serde_json::from_str(&manifest)?;
     let manifest_string = serde_json::to_string_pretty(&manifest)?;
 
     Ok(ManifestMetadata {
