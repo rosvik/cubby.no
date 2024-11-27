@@ -16,22 +16,27 @@ pub struct ManifestMetadata {
     pub content: Option<String>,
 }
 
-pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
+pub fn get_path_or_default(partial_path: Option<PathBuf>) -> Result<PathBuf, Box<dyn Error>> {
     let container_dir = env::var("CONTAINER_DIR")?;
     let container_dir = PathBuf::from(container_dir);
-    let dir_path = match utils::safely_join(container_dir, path.clone().unwrap_or_default()) {
+    let full_path = match utils::safely_join(container_dir, partial_path.unwrap_or_default()) {
         Some(path) => path,
         None => return Err("Invalid path".into()),
     };
+    Ok(full_path)
+}
+
+pub fn get_directory(partial_path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>> {
+    let full_path = get_path_or_default(partial_path.clone())?;
 
     let mut directories = Vec::new();
     let mut manifests = Vec::new();
-    let entries = std::fs::read_dir(dir_path)?;
+    let entries = std::fs::read_dir(&full_path)?;
     entries.for_each(|entry| {
         if let Ok(entry) = entry {
             let file_name = utils::gt_dir_entry(&entry);
             if let Ok(metadata) = entry.metadata() {
-                let file_path = match &path {
+                let file_path = match &partial_path {
                     Some(path) => format!("{}/{}", path.to_string_lossy(), file_name),
                     None => file_name.clone(),
                 };
@@ -54,28 +59,23 @@ pub fn get_directory(path: Option<PathBuf>) -> Result<Directory, Box<dyn Error>>
     });
 
     Ok(Directory {
-        path: path.as_ref().map(|p| p.to_string_lossy().to_string()),
-        name: path.as_ref().map(|p| utils::gt_file_name(p)),
+        path: partial_path.as_ref().map(|p| utils::gt_path(p)),
+        name: partial_path.as_ref().map(|p| utils::gt_file_name(p)),
         directories,
         manifests,
     })
 }
 
-pub fn get_manifest(path: PathBuf) -> Result<ManifestMetadata, Box<dyn Error>> {
-    let container_dir = env::var("CONTAINER_DIR")?;
-    let container_dir = PathBuf::from(container_dir);
-    let manifest_path = match utils::safely_join(container_dir, path) {
-        Some(path) => path,
-        None => return Err("Invalid path".into()),
-    };
+pub fn get_manifest(partial_path: PathBuf) -> Result<ManifestMetadata, Box<dyn Error>> {
+    let full_path = get_path_or_default(Some(partial_path.clone()))?;
 
-    let manifest = std::fs::read_to_string(&manifest_path)?;
+    let manifest = std::fs::read_to_string(&full_path)?;
     let manifest: serde_json::Value = serde_json::from_str(&manifest)?;
     let manifest_string = serde_json::to_string_pretty(&manifest)?;
 
     Ok(ManifestMetadata {
-        path: utils::gt_path(&manifest_path),
-        name: utils::gt_file_name(&manifest_path)
+        path: utils::gt_path(&partial_path),
+        name: utils::gt_file_name(&full_path)
             .trim_end_matches(".json")
             .into(),
         content: Some(manifest_string),

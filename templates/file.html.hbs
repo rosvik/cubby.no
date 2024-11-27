@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>cubby.no</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <pre class="manifest-content">{{file.content}}</pre>
+
+    <script src="/static/htmx@2.0.3.min.js"></script>
+    <script src="/static/syntax-hightlight.js"></script>
+    <script>
+        window.onload = () => {
+            const codeBlocks = document.getElementsByTagName('pre');
+            for (let i = 0; i < codeBlocks.length; i++) {
+                codeBlocks[i].innerHTML = syntaxHighlight(codeBlocks[i].innerText);
+            }
+        };
+    </script>
+</body>
+</html>

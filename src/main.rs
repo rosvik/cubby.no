@@ -25,20 +25,42 @@ async fn main() -> Result<(), rocket::Error> {
 
 #[get("/?<path>")]
 async fn get_index(path: Option<&str>) -> Result<Template, Status> {
-    let path_buf = path.map(PathBuf::from);
-    let directory = data::get_directory(path_buf).map_err(|_| Status::InternalServerError)?;
-    Ok(Template::render(
-        "index",
-        context! {
-            path,
-            directory,
-        },
-    ))
+    let partial_path = path.map(PathBuf::from);
+
+    let full_path =
+        data::get_path_or_default(partial_path.clone()).map_err(|_| Status::InternalServerError)?;
+
+    if full_path.is_dir() {
+        let directory =
+            data::get_directory(partial_path.clone()).map_err(|_| Status::InternalServerError)?;
+        return Ok(Template::render(
+            "index",
+            context! {
+                partial_path,
+                directory,
+            },
+        ));
+    }
+
+    if let Some(partial_path) = partial_path {
+        if full_path.is_file() {
+            let file = data::get_manifest(partial_path).map_err(|_| Status::InternalServerError)?;
+            return Ok(Template::render(
+                "file",
+                context! {
+                    file,
+                },
+            ));
+        }
+    }
+
+    Err(Status::NotFound)
 }
 
-#[get("/htmx/directory/<path..>")]
-async fn get_directory(path: PathBuf) -> Result<Template, Status> {
-    let directory = data::get_directory(Some(path)).map_err(|_| Status::InternalServerError)?;
+#[get("/htmx/directory/<partial_path..>")]
+async fn get_directory(partial_path: PathBuf) -> Result<Template, Status> {
+    let directory =
+        data::get_directory(Some(partial_path)).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
         "directory",
         context! {
@@ -47,9 +69,9 @@ async fn get_directory(path: PathBuf) -> Result<Template, Status> {
     ))
 }
 
-#[get("/htmx/manifest/<path..>")]
-async fn get_manifest(path: PathBuf) -> Result<Template, Status> {
-    let manifest = data::get_manifest(path).map_err(|_| Status::InternalServerError)?;
+#[get("/htmx/manifest/<partial_path..>")]
+async fn get_manifest(partial_path: PathBuf) -> Result<Template, Status> {
+    let manifest = data::get_manifest(partial_path).map_err(|_| Status::InternalServerError)?;
     Ok(Template::render(
         "manifest",
         context! {
