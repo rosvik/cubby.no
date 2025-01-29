@@ -1,6 +1,7 @@
-use rocket::fs::FileServer;
 use rocket::http::Status;
+use rocket::{config, fs::FileServer};
 use rocket_dyn_templates::{context, Template};
+use std::net::{IpAddr, Ipv4Addr};
 use std::{env, path::PathBuf};
 
 mod data;
@@ -13,8 +14,13 @@ extern crate rocket;
 async fn main() -> Result<(), rocket::Error> {
     dotenv::dotenv().ok();
     let port = env::var("PORT").unwrap_or_default().parse::<u16>();
+    let config = config::Config {
+        port: port.unwrap_or(8601),
+        address: IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+        ..Default::default()
+    };
     let _rocket = rocket::build()
-        .configure(rocket::Config::figment().merge(("port", port.unwrap_or(8601))))
+        .configure(config)
         .attach(Template::fairing())
         .mount("/", routes![get_index, get_directory, get_manifest])
         .mount("/static", FileServer::from("static"))
