@@ -20,7 +20,7 @@ jobs:
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: cubby-no
+          image: cubby.no
           tags: main ${{ github.sha }}
           platforms: linux/amd64, linux/arm64
           oci: true
