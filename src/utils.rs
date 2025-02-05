@@ -25,7 +25,7 @@ pub fn is_tag(metadata: fs::Metadata, file_name: &str) -> bool {
     if !file_name.ends_with(".json") {
         return false;
     }
-    if file_name.starts_with("sha256@") {
+    if file_name.starts_with("sha256:") {
         return false;
     }
     true
