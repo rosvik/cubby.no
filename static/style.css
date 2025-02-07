@@ -5,11 +5,12 @@
   --accent: #fcee54;
   --secondary-accent: #85eea7;
   --tertiary-accent: rgb(111, 184, 247);
+  font-size: 14px;
 }
 html {
   background-color: var(--background);
   color: var(--text);
-  font-family: 'Berkeley Mono', 'JetBrains Mono';
+  font-family: 'JetBrains Mono';
 }
 body {
   max-width: 80ch;
