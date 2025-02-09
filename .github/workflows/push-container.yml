@@ -87,7 +87,7 @@ jobs:
         run: |
           REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
           buildah manifest create $REPO:${{ env.TAG }}
-          for IMGTAG in amd64 arm64; do \
-            buildah manifest add $REPO:${{ env.TAG }} docker://$REPO:IMGTAG; \
+          for ARCH in amd64 arm64; do \
+            buildah manifest add $REPO:${{ env.TAG }} docker://$REPO:${{ env.TAG }}-$ARCH; \
           done
           buildah manifest push --all $REPO:${{ env.TAG }}
