@@ -4,38 +4,81 @@ on:
     branches:
       - main
 
+env:
+  REGISTRY_USER: rosvik
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  REGISTRY_URL: cubby.no
+  IMAGE: rosvik/cubby.no
+  TAG: main
+
 jobs:
-  podman-build:
-    runs-on: ubuntu-latest
+  build-amd64:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      # Setup for multi architecture build
-      - name: Install QEMU
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-user-static
-
       - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: cubby.no
-          tags: main ${{ github.sha }}
-          platforms: linux/amd64, linux/arm64
+          image: ${{ env.IMAGE }}
+          tags: ${{ env.TAG }}-amd64 ${{ github.sha }}-amd64
+          platforms: linux/amd64
           oci: true
           layers: true
           containerfiles: |
             Containerfile
-
-      - name: Push To cubby.no
+      - name: Push To Registry
         id: push-to-cubby
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
-          registry: cubby.no/rosvik
-          username: ${{ vars.REGISTRY_USER }}
+          registry: ${{ env.REGISTRY_URL }}
+          username: ${{ env.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - name: Print image url
+      - name: Print Image URL
         run: echo "Image pushed to ${{ steps.push-to-cubby.outputs.registry-paths }}"
+
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE }}
+          tags: ${{ env.TAG }}-arm64 ${{ github.sha }}-arm64
+          platforms: linux/arm64
+          oci: true
+          layers: true
+          containerfiles: |
+            Containerfile
+      - name: Push To Registry
+        id: push-to-cubby
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.REGISTRY_URL }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Print Image URL
+        run: echo "Image pushed to ${{ steps.push-to-cubby.outputs.registry-paths }}"
+
+  build-manifest:
+    runs-on: ubuntu-24.04
+    needs: [build-amd64, build-arm64]
+    steps:
+      - name: Install Buildah
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y buildah
+      - name: Build Manifest
+        run: |
+          REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
+          buildah manifest create $REPO:${{ env.TAG }}
+          for IMGTAG in amd64 arm64; do \
+            buildah manifest add $REPO:${{ env.TAG }} docker://$REPO:IMGTAG; \
+          done
+          buildah manifest push --all $REPO:${{ env.TAG }}
