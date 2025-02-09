@@ -44,10 +44,10 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
-      - name: Install Buildah
+      - name: Install Buildah and Podman
         run: |
           sudo apt-get update
-          sudo apt-get install -y buildah
+          sudo apt-get install -y buildah podman
       - name: Set up Search Registries
         run: |
           printf "[registries.search] \nregistries = ['quay.io', 'docker.io']\n" > registries.conf
