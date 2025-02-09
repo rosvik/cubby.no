@@ -78,10 +78,6 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [build-amd64, build-arm64]
     steps:
-      - name: Install Buildah
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y buildah
       - name: Create and Push Manifest
         run: |
           REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
