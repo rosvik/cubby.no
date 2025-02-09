@@ -22,7 +22,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.IMAGE }}
-          tags: ${{ env.TAG }}-amd64 ${{ github.sha }}-amd64
+          tags: ${{ env.TAG }}-amd64
           platforms: linux/amd64
           oci: true
           layers: true
@@ -57,7 +57,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.IMAGE }}
-          tags: ${{ env.TAG }}-arm64 ${{ github.sha }}-arm64
+          tags: ${{ env.TAG }}-arm64
           platforms: linux/arm64
           oci: true
           layers: true
