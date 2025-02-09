@@ -92,3 +92,6 @@ jobs:
           REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
           CREDS=${{ env.REGISTRY_USER }}:${{ secrets.REGISTRY_PASSWORD }}
           buildah manifest push --all --creds $CREDS $REPO:${{ env.TAG }}
+      - name: Cubbyman reload
+        run: |
+          curl -X POST --user ${{ secrets.CUBBYMAN_CREDENTIALS }} https://cubby.no/cubbyman/v1/reload
