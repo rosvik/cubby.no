@@ -81,9 +81,12 @@ jobs:
       - name: Create and Push Manifest
         run: |
           REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
-          CREDS=${{ env.REGISTRY_USER }}:${{ secrets.REGISTRY_PASSWORD }}
           buildah manifest create $REPO:${{ env.TAG }}
           for ARCH in amd64 arm64; do \
             buildah manifest add $REPO:${{ env.TAG }} docker://$REPO:${{ env.TAG }}-$ARCH; \
           done
+      - name: Push Manifest
+        run: |
+          REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
+          CREDS=${{ env.REGISTRY_USER }}:${{ secrets.REGISTRY_PASSWORD }}
           buildah manifest push --all --creds $CREDS $REPO:${{ env.TAG }}
