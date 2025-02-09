@@ -48,6 +48,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y buildah
+      - name: Set up Search Registries
+        run: |
+          printf "[registries.search] \nregistries = ['quay.io', 'docker.io']\n" > registries.conf
+          sudo mv registries.conf /etc/containers/registries.conf
       - name: Build Image
         id: build-image
         uses: redhat-actions/buildah-build@v2
