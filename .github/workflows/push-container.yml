@@ -3,13 +3,16 @@ on:
   push:
     branches:
       - main
+    tags:
+      - v*
 
 env:
   REGISTRY_USER: rosvik
   REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   REGISTRY_URL: cubby.no
   IMAGE: rosvik/cubby.no
-  TAG: main
+  # GITHUB_REF_NAME is the tag or short branch name
+  TAG: ${{ github.ref_name }}
 
 jobs:
   build-amd64:
@@ -92,6 +95,6 @@ jobs:
           REPO=${{ env.REGISTRY_URL }}/${{ env.IMAGE }}
           CREDS=${{ env.REGISTRY_USER }}:${{ secrets.REGISTRY_PASSWORD }}
           buildah manifest push --all --creds $CREDS $REPO:${{ env.TAG }}
-      - name: Cubbyman reload
+      - name: Cubbyman Reload
         run: |
           curl -X POST --user ${{ secrets.CUBBYMAN_CREDENTIALS }} https://cubby.no/cubbyman/v1/reload
