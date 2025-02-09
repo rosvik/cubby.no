@@ -3,13 +3,14 @@ on:
   push:
     branches:
       - main
+      - rosvik/test-arm64
 
 env:
   REGISTRY_USER: rosvik
   REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   REGISTRY_URL: cubby.no
   IMAGE: rosvik/cubby.no
-  TAG: main
+  TAG: test
 
 jobs:
   build-amd64:
