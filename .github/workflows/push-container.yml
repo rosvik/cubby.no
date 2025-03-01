@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
-      # The arm runned doesn't come with buildah and podman preinstalled
+      # The arm runner doesn't come with buildah and podman preinstalled
       - name: Set up Buildah and Podman
         run: |
           sudo apt-get update
