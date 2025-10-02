@@ -1,13 +1,13 @@
 [package]
 name = "cubby-no"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 dotenv = "0.15.0"
 path-clean = "1.0.1"
 rocket = "0.5.1"
 rocket_dyn_templates = { version = "0.2.0", features = ["handlebars"] }
-serde = { version = "1.0.210", features = ["derive"] }
-serde_json = "1.0.128"
-serde_with = "3.11.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+serde_with = "3.14.1"

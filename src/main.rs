@@ -1,6 +1,6 @@
 use rocket::http::Status;
 use rocket::{config, fs::FileServer};
-use rocket_dyn_templates::{context, Template};
+use rocket_dyn_templates::{Template, context};
 use std::net::{IpAddr, Ipv4Addr};
 use std::{env, path::PathBuf};
 
@@ -48,16 +48,16 @@ async fn get_index(path: Option<&str>) -> Result<Template, Status> {
         ));
     }
 
-    if let Some(partial_path) = partial_path {
-        if full_path.is_file() {
-            let file = data::get_manifest(partial_path).map_err(|_| Status::InternalServerError)?;
-            return Ok(Template::render(
-                "file",
-                context! {
-                    file,
-                },
-            ));
-        }
+    if let Some(partial_path) = partial_path
+        && full_path.is_file()
+    {
+        let file = data::get_manifest(partial_path).map_err(|_| Status::InternalServerError)?;
+        return Ok(Template::render(
+            "file",
+            context! {
+                file,
+            },
+        ));
     }
 
     Err(Status::NotFound)
