@@ -17,7 +17,7 @@
             class="directory-item"
             hx-trigger="click"
             hx-swap="outerHTML"
-            hx-get="/htmx/directory/{{this.path}}"
+            hx-get="/?path={{this.path}}"
         >
             <div class="overflow-truncate">{{this.name}}</div>
         </li>

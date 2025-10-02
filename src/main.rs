@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<rocket::Error>> {
     let _rocket = rocket::build()
         .configure(config)
         .attach(Template::fairing())
-        .mount("/", routes![get_index, get_directory, get_manifest])
+        .mount("/", routes![get_index, get_manifest])
         .mount("/static", FileServer::from("static"))
         .launch()
         .await?;
@@ -61,18 +61,6 @@ async fn get_index(path: Option<&str>) -> Result<Template, Status> {
     }
 
     Err(Status::NotFound)
-}
-
-#[get("/htmx/directory/<partial_path..>")]
-async fn get_directory(partial_path: PathBuf) -> Result<Template, Status> {
-    let directory =
-        data::get_directory(Some(partial_path)).map_err(|_| Status::InternalServerError)?;
-    Ok(Template::render(
-        "directory",
-        context! {
-            directory,
-        },
-    ))
 }
 
 #[get("/htmx/manifest/<partial_path..>")]
