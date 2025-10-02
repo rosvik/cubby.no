@@ -11,7 +11,7 @@ mod utils;
 extern crate rocket;
 
 #[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
+async fn main() -> Result<(), Box<rocket::Error>> {
     dotenv::dotenv().ok();
     let port = env::var("PORT").unwrap_or_default().parse::<u16>();
     let config = config::Config {
